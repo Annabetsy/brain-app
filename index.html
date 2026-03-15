@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Brain</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Setup Screen -->
+  <div id="setup-screen" class="screen hidden">
+    <div class="setup-container">
+      <h1>Welcome to Brain</h1>
+      <p>Your personal command center, on your phone.</p>
+      <div class="setup-step">
+        <label for="github-token">GitHub Personal Access Token</label>
+        <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx">
+        <small>Create one at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a> with <code>repo</code> scope</small>
+      </div>
+      <div class="setup-step">
+        <label for="claude-key">Claude API Key</label>
+        <input type="password" id="claude-key" placeholder="sk-ant-xxxxxxxxxxxx">
+        <small>From <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></small>
+      </div>
+      <div class="setup-step">
+        <label for="repo-owner">GitHub Username</label>
+        <input type="text" id="repo-owner" placeholder="Annabetsy">
+      </div>
+      <div class="setup-step">
+        <label for="repo-name">Repo Name</label>
+        <input type="text" id="repo-name" placeholder="brain">
+      </div>
+      <button id="setup-save" class="btn-primary">Connect</button>
+      <p id="setup-error" class="error hidden"></p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="screen hidden">
+    <!-- Top Bar -->
+    <header id="top-bar">
+      <h1 id="app-title">Brain</h1>
+      <div class="header-actions">
+        <button id="refresh-btn" class="icon-btn" title="Refresh">&#x21bb;</button>
+        <button id="settings-btn" class="icon-btn" title="Settings">&#x2699;</button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav id="tabs">
+      <button class="tab active" data-tab="weekend">Weekend</button>
+      <button class="tab" data-tab="command">Command Center</button>
+      <button class="tab" data-tab="ai">AI</button>
+    </nav>
+
+    <!-- Weekend Tab -->
+    <div id="tab-weekend" class="tab-content active">
+      <div id="weekend-content" class="markdown-content">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Command Center Tab -->
+    <div id="tab-command" class="tab-content">
+      <div id="command-content" class="markdown-content">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <!-- AI Tab -->
+    <div id="tab-ai" class="tab-content">
+      <div class="ai-section">
+        <button id="room-scan-btn" class="btn-primary btn-large">
+          <span class="btn-icon">&#x1f4f7;</span>
+          Room Scan
+        </button>
+        <p class="hint">Take a photo and get task suggestions</p>
+      </div>
+      <div class="ai-section">
+        <div id="ai-chat" class="ai-chat"></div>
+        <div class="ai-input-row">
+          <input type="text" id="ai-input" placeholder="Ask Claude anything...">
+          <button id="ai-send" class="btn-primary btn-small">Send</button>
+        </div>
+      </div>
+      <div id="ai-suggestions" class="hidden">
+        <h3>Suggested Tasks</h3>
+        <div id="suggestion-list"></div>
+        <button id="add-suggestions" class="btn-primary">Add Selected to Weekend List</button>
+      </div>
+    </div>
+
+    <!-- Quick Add FAB -->
+    <button id="quick-add-fab" class="fab">+</button>
+
+    <!-- Quick Add Modal -->
+    <div id="quick-add-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Quick Add</h3>
+        <input type="text" id="quick-add-input" placeholder="What needs doing?">
+        <div class="quick-add-targets">
+          <button class="target-btn active" data-target="weekend">Weekend</button>
+          <button class="target-btn" data-target="inbox">Inbox</button>
+        </div>
+        <div class="modal-actions">
+          <button id="quick-add-cancel" class="btn-secondary">Cancel</button>
+          <button id="quick-add-save" class="btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Room Scan Modal -->
+    <div id="room-scan-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Room Scan</h3>
+        <div id="photo-preview" class="hidden">
+          <img id="photo-img" alt="Room photo">
+        </div>
+        <input type="file" id="photo-input" accept="image/*" capture="environment">
+        <div id="scan-loading" class="hidden">
+          <div class="loading">Claude is analyzing your photo...</div>
+        </div>
+        <div id="scan-results" class="hidden">
+          <h4>Suggested Tasks</h4>
+          <div id="scan-tasks"></div>
+          <div class="modal-actions">
+            <button id="scan-cancel" class="btn-secondary">Cancel</button>
+            <button id="scan-add" class="btn-primary">Add Selected</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Settings</h3>
+        <div class="setup-step">
+          <label>GitHub Token</label>
+          <input type="password" id="settings-github-token">
+        </div>
+        <div class="setup-step">
+          <label>Claude API Key</label>
+          <input type="password" id="settings-claude-key">
+        </div>
+        <div class="modal-actions">
+          <button id="settings-cancel" class="btn-secondary">Cancel</button>
+          <button id="settings-save" class="btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/claude.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
