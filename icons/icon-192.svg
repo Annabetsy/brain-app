@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="40" fill="#6366f1"/>
-  <text x="96" y="120" font-family="-apple-system,system-ui,sans-serif" font-size="100" font-weight="700" fill="white" text-anchor="middle">B</text>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <text x="96" y="130" font-size="110" text-anchor="middle">🧠</text>
 </svg>
